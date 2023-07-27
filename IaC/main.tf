@@ -31,3 +31,45 @@ resource "aws_iam_group_membership" "main" {
     users = [var.ci_name]
     group = aws_iam_group.iam_group.name
 }
+
+# Creando Policy de acceso restringido
+data "aws_iam_policy_document" "def_policy" {
+    statement {
+        actions = [
+            "ecr:GetAuthorizationToken",
+        ]
+        resources = ["*"]
+    }
+
+    statement {
+        actions = [
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:GetRepositoryPolicy",
+            "ecr:DescribeRepositories",
+            "ecr:ListImages",
+            "ecr:DescribeImages",
+            "ecr:BatchGetImage",
+            "ecr:InitiateLayerUpload",
+            "ecr:UploadLayerPart",
+            "ecr:CompleteLayerUpload",
+            "ecr:PutImage",
+        ]
+    resources = [
+            aws_ecr_repository.ecr.arn,
+        ]
+    }
+}
+
+resource "aws_iam_policy" "iam_ecr_policy" {
+  name        = "${var.ci_name}-ecr-push-policy"
+  description = "Allow ${var.ci_name} to push new ${var.ecr_repo} ECR images"
+  path        = "/"
+  policy      = data.aws_iam_policy_document.def_policy.json
+}
+
+# Asignando policy a group
+resource "aws_iam_group_policy_attachment" "grant_access" {
+  group      = aws_iam_group.iam_group.name
+  policy_arn = aws_iam_policy.iam_ecr_policy.arn
+}
