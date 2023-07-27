@@ -11,3 +11,10 @@ resource "aws_ecr_repository" "ecr" {
         }
     tags = var.tags
 }
+
+# Creando usuario
+resource "aws_iam_user" "iam_user" {
+    name          = var.ci_name
+    force_destroy = true
+    tags = var.tags
+}
