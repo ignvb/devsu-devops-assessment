@@ -1,5 +1,5 @@
-# temp stage
-FROM python:3.9-slim as builder
+# Primera etapa para instalar dependencias
+FROM python:3.11.4-slim as builder
 
 WORKDIR /app
 
@@ -13,11 +13,9 @@ COPY ./demo-devops-python/requirements.txt ./requirements.txt
 COPY ./dep_gunicorn.txt ./dep_gunicorn.txt
 RUN cat /app/requirements.txt /app/dep_gunicorn.txt > /app/requirements2.txt && \
     pip wheel --no-cache-dir --wheel-dir /app/wheels -r /app/requirements2.txt
-# RUN cat /app/requirements.txt /app/dep_gunicorn.txt > /app/requirements2.txt
-# RUN pip install -r /app/requirements2.txt
 
-# final stage
-FROM python:3.9-slim
+# Imagen final
+FROM python:3.11.4-alpine
 
 ENV APP_HOME=/app
 WORKDIR $APP_HOME
