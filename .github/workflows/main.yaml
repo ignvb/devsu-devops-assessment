@@ -27,5 +27,6 @@ jobs:
 
     - name: Unit test
       run: |
+        cp ./pytest.ini ./demo-devops-python
         cd ./demo-devops-python
         pytest --cov=./api
