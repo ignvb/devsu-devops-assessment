@@ -73,3 +73,16 @@ resource "aws_iam_group_policy_attachment" "grant_access" {
   group      = aws_iam_group.iam_group.name
   policy_arn = aws_iam_policy.iam_ecr_policy.arn
 }
+
+resource "aws_iam_access_key" "access_ecr" {
+  user    = aws_iam_user.iam_user.name
+  pgp_key = var.public_pgp_key
+}
+
+output "access_id" {
+  value = aws_iam_access_key.access_ecr.id
+}
+
+output "access_secret" {
+  value = aws_iam_access_key.access_ecr.encrypted_secret
+}

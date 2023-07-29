@@ -27,3 +27,9 @@ variable "ci_name" {
     type        = string
     default     = "CI"
 }
+
+variable "public_pgp_key" {
+    description = "Key publica de GPG"
+    type        = string
+    default     = ""
+}
