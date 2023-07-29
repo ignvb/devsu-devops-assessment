@@ -14,7 +14,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
-        submodules: 'true'
     
     - name: Setup python
       uses: actions/setup-python@v4
@@ -23,13 +22,11 @@ jobs:
     
     - name: Install dependencies
       run: |
-        cat ./req_unittest.txt ./demo-devops-python/requirements.txt > ./demo-devops-python/req.txt
-        pip install -r ./demo-devops-python/req.txt
+        pip install -r ./src/requirements.txt -r /src/req_unittest.txt
 
     - name: Unit test
       run: |
-        cp ./pytest.ini ./demo-devops-python
-        cd ./demo-devops-python
+        cd ./src
         pytest --cov=./api
 
     - name: SonarCloud Scan
