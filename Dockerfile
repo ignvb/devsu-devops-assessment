@@ -1,6 +1,6 @@
 ## ETAPA 1 ##
 # Resolviendo depedencias
-FROM python:3.11.3-slim as builder
+FROM python:3.11.3-slim AS builder
 
 WORKDIR /app
 
