@@ -3,6 +3,10 @@ name: devsu-assesment-ci
 on:
   push:
     branches: [ dev ]
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'Dockerfile'
 
 jobs:
   build:
