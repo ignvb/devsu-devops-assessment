@@ -13,6 +13,7 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v2
       with:
+        fetch-depth: 0
         submodules: 'true'
     
     - name: Setup python
@@ -31,5 +32,8 @@ jobs:
         cd ./demo-devops-python
         pytest --cov=./api
 
-    - name: Run Codacy Analysis CLI
-      uses: codacy/codacy-analysis-cli-action@master
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.SONAR_GITHUB }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
