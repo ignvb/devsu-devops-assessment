@@ -13,7 +13,7 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v2
       with:
-        submodule: 'true'
+        submodules: 'true'
     
     - name: Run Codacy Analysis CLI
       uses: codacy/codacy-analysis-cli-action@master
