@@ -31,7 +31,7 @@ jobs:
         cd ..
 
     - name: Override path in coverage report
-      run: sed -i "s/<source>\/home\/runner\/work\/devsu-devops-assessment\/devsu-devops-assessment\/src\/demo<\/source>/<source>\/github\/workspace\/src\/demo<\/source>/g" /home/runner/work/devsu-devops-assessment/devsu-devops-assessment/src/coverage.xml
+      run: sed -i "s/<source>\/home\/runner\/work\/devsu-devops-assessment\/devsu-devops-assessment\/src\/api<\/source>/<source>\/github\/workspace\/src\/api<\/source>/g" /home/runner/work/devsu-devops-assessment/devsu-devops-assessment/src/coverage.xml
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
