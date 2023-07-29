@@ -1,6 +1,6 @@
 ## ETAPA 1 ##
 # Resolviendo depedencias
-FROM python:3.11.4-slim as builder
+FROM python:3.11.3-slim as builder
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ RUN cat /app/requirements.txt /app/dep_gunicorn.txt > /app/requirements2.txt && 
 
 ## ETAPA 2 ##
 # Imagen final
-FROM python:3.11.4-alpine
+FROM python:3.11.3-alpine
 
 # Creando usuario (sin home, password ni shell) para correr aplicación como non-root
 RUN addgroup app && adduser app -H -D -s /sbin/nologin -G app
