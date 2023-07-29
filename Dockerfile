@@ -11,10 +11,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc
 
 # Instalando dependencias
-COPY ./demo-devops-python/requirements.txt ./requirements.txt
-COPY ./dep_gunicorn.txt ./dep_gunicorn.txt
-RUN cat /app/requirements.txt /app/dep_gunicorn.txt > /app/requirements2.txt && \
-    pip wheel --no-cache-dir --wheel-dir /app/wheels -r /app/requirements2.txt
+COPY ./src/requirements.txt ./requirements.txt
+RUN pip wheel --no-cache-dir --wheel-dir /app/wheels -r /app/requirements.txt
 
 ## ETAPA 2 ##
 # Imagen final
@@ -35,7 +33,7 @@ COPY --from=builder /app/wheels /wheels
 RUN pip install --no-cache /wheels/*
 
 # Copaindo archivos de la app
-COPY ./demo-devops-python/ .
+COPY ./src/ .
 # Copiando script de entrypoint
 COPY ./scripts/entrypoint_dev.sh .
 RUN chmod +x $APP_HOME/entrypoint_dev.sh
