@@ -27,7 +27,7 @@ jobs:
     - name: Unit test
       run: |
         cd ./src
-        pytest --cov=./api
+        tox -e py
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
