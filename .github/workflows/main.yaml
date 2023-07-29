@@ -1,0 +1,19 @@
+name: devsu-assesment-ci
+
+on:
+  push:
+    branches: [ dev ]
+
+jobs:
+  build:
+    name: GitOps workflow
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+      with:
+        submodule: 'true'
+    
+    - name: Run Codacy Analysis CLI
+      uses: codacy/codacy-analysis-cli-action@master
