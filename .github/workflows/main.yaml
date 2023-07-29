@@ -28,6 +28,10 @@ jobs:
       run: |
         cd ./src
         tox -e py
+        cd ..
+
+    - name: Override path in coverage report
+      run: sed -i "s/<source>\/home\/runner\/work\/devsu-devops-assessment\/devsu-devops-assessment\/src\/demo<\/source>/<source>\/github\/workspace\/src<\/source>/g" /home/runner/work/devsu-devops-assessment/devsu-devops-assessment/src/coverage.xml
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
