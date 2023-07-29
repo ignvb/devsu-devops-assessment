@@ -15,5 +15,15 @@ jobs:
       with:
         submodules: 'true'
     
-    - name: Run Codacy Analysis CLI
-      uses: codacy/codacy-analysis-cli-action@master
+    - name: Install dependency
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11.3'
+      run: |
+        cat ./req_unittest.txt ./demo-devops-python/requirements.txt > ./demo-devops-python/req.txt
+        pip install -r ./demo-devops-python/req.txt
+
+    - name: Unit test
+      run: |
+        cd ./demo-devops-python
+        pytest --cov=./api
