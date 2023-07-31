@@ -45,9 +45,9 @@ ingress:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/healthcheck-path: '/api'
-    alb.ingress.kubernetes.io/healthcheck-port: '8000'
-    alb.ingress.kubernetes.io/success-codes: '301'
+    alb.ingress.kubernetes.io/healthcheck-path: "/api"
+    alb.ingress.kubernetes.io/healthcheck-port: "8000"
+    alb.ingress.kubernetes.io/success-codes: "301"
   hosts:
     paths:
       path: "/"
@@ -59,16 +59,16 @@ resources:
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
-    cpu: 80m
+    cpu: 100m
     memory: 100Mi
   requests:
-    cpu: 80m
+    cpu: 100m
     memory: 100Mi
 
 autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
