@@ -4,6 +4,7 @@ on:
   push:
     branches: [ dev ]
     paths:
+      - 'demo-chart/'
       - 'src/**'
       - 'scripts/**'
       - 'Dockerfile'
@@ -54,16 +55,40 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
+    - name: Set image hash to env
+      id: vars
+      run: echo "GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
+
     - name: Build and tag image
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_NAME: ${{ vars.IMAGE_NAME }}
-
       run: |
         # Build a docker container and push it to ECR
-        git_hash=$(git rev-parse --short "$GITHUB_SHA")
-        echo "Building image $ECR_REGISTRY/$IMAGE_NAME:$git_hash"
-        docker build -t $ECR_REGISTRY/$IMAGE_NAME:$git_hash .
-        echo "Pushing image $IMAGE_NAME:$git_hash to AWS ECR"
-        docker push $ECR_REGISTRY/$IMAGE_NAME:$git_hash
+        echo "Building image $ECR_REGISTRY/$IMAGE_NAME:${{ env.GIT_HASH }}"
+        docker build -t $ECR_REGISTRY/$IMAGE_NAME:${{ env.GIT_HASH }} .
+        echo "Pushing image $IMAGE_NAME:${{ env.GIT_HASH }} to AWS ECR"
+        docker push $ECR_REGISTRY/$IMAGE_NAME:${{ env.GIT_HASH }}
+
+    - name: Uninstall Demo-Chart
+      uses: bitovi/github-actions-deploy-eks-helm@v1.2.4
+      with:
+        aws-region: ${{ secrets.AWS_REGION }}
+        action: uninstall
+        cluster-name: ${{ vars.CLUSTER_NAME }}
+        name: ${{ vars.RELEASE_NAME }}
+        namespace: prod
+
+    - name: Install Demo-Chart
+      uses: bitovi/github-actions-deploy-eks-helm@v1.2.4
+      with:
+        aws-access-key-id: ${{ secrets.K8S_AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.K8S_AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+        cluster-name: ${{ vars.CLUSTER_NAME }}
+        action: install
+        name: ${{ vars.RELEASE_NAME }}
+        chart-path: demo-chart/
+        namespace: prod
+        values: image.tag=${{ env.GIT_HASH }}
