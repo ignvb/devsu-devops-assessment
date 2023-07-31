@@ -252,6 +252,13 @@ resource "helm_release" "lb" {
   }
 }
 
+/* Creando namespace para produccion */
+resource "kubernetes_namespace" "prod-ns" {
+  metadata {
+    name = "prod"
+  }
+}
+
 /* Instalando Sealed Secrets en el cluster */
 # Creando namespace para sealed secrets
 resource "kubernetes_namespace" "sealed-secrets-ns" {
@@ -281,4 +288,12 @@ resource "helm_release" "sealed-secrets" {
   name       = "sealed-secrets"
   namespace  = "sealed-secrets"
   repository = "https://bitnami-labs.github.io/sealed-secrets"
+}
+
+/* Instalando Metrics Server para HPA */
+resource "helm_release" "metrics_server" {
+  name       = "metrics-server"
+  repository = "https://kubernetes-sigs.github.io/metrics-server/"
+  chart      = "metrics-server"
+  namespace  = "kube-system"
 }
