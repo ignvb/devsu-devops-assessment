@@ -32,6 +32,7 @@ variable "public_pgp_key" {
     description = "Key publica de GPG"
     type        = string
     default     = ""
+    sensitive   = true
 }
 
 variable "vpc_name" {

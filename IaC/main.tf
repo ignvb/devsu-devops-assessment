@@ -141,7 +141,7 @@ module "eks" {
     one = {
       name = "node-group-1"
 
-      instance_types = ["t3a.small"]
+      instance_types = ["t3a.medium"]
 
       min_size     = 1
       max_size     = 2
@@ -250,4 +250,35 @@ resource "helm_release" "lb" {
     name  = "clusterName"
     value = module.eks.cluster_name
   }
+}
+
+/* Instalando Sealed Secrets en el cluster */
+# Creando namespace para sealed secrets
+resource "kubernetes_namespace" "sealed-secrets-ns" {
+  metadata {
+    name = "sealed-secrets"
+  }
+}
+# Cargando las llaves locales
+resource "kubernetes_secret" "sealed-secrets-key" {
+  depends_on = [kubernetes_namespace.sealed-secrets-ns]
+  metadata {
+    name      = "sealed-secrets-key"
+    namespace = "sealed-secrets"
+    labels = {
+      "sealedsecrets.bitnami.com/sealed-secrets-key" = "active"
+    }
+  }
+  data = {
+    "tls.key" = file("certs/private.key")
+    "tls.crt" = file("certs/public.crt")
+  }
+  type = "kubernetes.io/tls"
+}
+# Instalando Sealed Secrets usando helm
+resource "helm_release" "sealed-secrets" {
+  chart      = "sealed-secrets"
+  name       = "sealed-secrets"
+  namespace  = "sealed-secrets"
+  repository = "https://bitnami-labs.github.io/sealed-secrets"
 }
