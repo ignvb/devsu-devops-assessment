@@ -33,3 +33,15 @@ variable "public_pgp_key" {
     type        = string
     default     = ""
 }
+
+variable "vpc_name" {
+    description = "Nombre VPC a crear en AWS"
+    type        = string
+    default     = "vpc-demo"
+}
+
+variable "cluster_name" {
+    description = "Nombre Cluster a crear en AWS"
+    type        = string
+    default     = "cluster-demo"
+}
