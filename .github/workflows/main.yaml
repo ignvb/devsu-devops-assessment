@@ -1,0 +1,101 @@
+name: devsu-assesment-ci
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'demo-chart/**'
+      - 'src/**'
+      - 'scripts/**'
+      - 'Dockerfile'
+
+jobs:
+  build:
+    name: GitOps workflow
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11.3'
+
+    - name: Install dependencies
+      run: |
+        pip install -r ./src/requirements.txt -r ./src/req_unittest.txt
+
+    - name: Unit test
+      run: |
+        cd ./src
+        tox -e py
+        cd ..
+
+    - name: Override path in coverage report
+      run: sed -i "s/<source>\/home\/runner\/work\/devsu-devops-assessment\/devsu-devops-assessment\/src\/api<\/source>/<source>\/github\/workspace\/src\/api<\/source>/g" /home/runner/work/devsu-devops-assessment/devsu-devops-assessment/src/coverage.xml
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.SONAR_GITHUB }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    - name: Configure AWS credentials for ECR
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Set image hash to env
+      id: vars
+      run: echo "GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
+
+    - name: Build and tag image
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_NAME: ${{ vars.IMAGE_NAME }}
+      run: |
+        # Build a docker container and push it to ECR
+        echo "Building image $ECR_REGISTRY/$IMAGE_NAME:${{ env.GIT_HASH }}"
+        docker build -t $ECR_REGISTRY/$IMAGE_NAME:${{ env.GIT_HASH }} .
+        echo "Pushing image $IMAGE_NAME:${{ env.GIT_HASH }} to AWS ECR"
+        docker push $ECR_REGISTRY/$IMAGE_NAME:${{ env.GIT_HASH }}
+
+    - name: Configure AWS credentials for k8s
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.K8S_AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.K8S_AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Uninstall Demo-Chart
+      uses: bitovi/github-actions-deploy-eks-helm@v1.2.4
+      with:
+        aws-region: ${{ secrets.AWS_REGION }}
+        aws-access-key-id: ${{ secrets.K8S_AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.K8S_AWS_SECRET_ACCESS_KEY }}
+        action: uninstall
+        cluster-name: ${{ vars.CLUSTER_NAME }}
+        name: ${{ vars.RELEASE_NAME }}
+        namespace: prod
+
+    - name: Install Demo-Chart
+      uses: bitovi/github-actions-deploy-eks-helm@v1.2.4
+      with:
+        aws-region: ${{ secrets.AWS_REGION }}
+        cluster-name: ${{ vars.CLUSTER_NAME }}
+        action: install
+        name: ${{ vars.RELEASE_NAME }}
+        chart-path: demo-chart/
+        namespace: prod
+        values: image.tag=${{ env.GIT_HASH }}

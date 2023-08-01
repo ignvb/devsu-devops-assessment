@@ -1,0 +1,82 @@
+# Default values for demo-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+image:
+  repository: "951903200613.dkr.ecr.us-east-1.amazonaws.com/devsu-demo"
+  tag: "b19469b"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: NodePort
+  port: 8000
+
+ingress:
+  enabled: true
+  className: "alb"
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: "/api"
+    alb.ingress.kubernetes.io/healthcheck-port: "8000"
+    alb.ingress.kubernetes.io/success-codes: "301"
+  hosts:
+    paths:
+      path: "/"
+      pathType: "Prefix"
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 100m
+    memory: 100Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Values environment in configmap
+configmap:
+  dbname: "db.sqlite3"
+  debug: "True"
+
+# Values environment in secrets
+secrets:
+  secret_key: AgBw5EQYN+8rDKU1nSD8axy3691RUSvYIaW+8MWXRLMkvdtd9SWCiT7ZaVpsCOCCeS2s7X7RD32q6++498I0JAa+Bml8kmkCMRrQWoJqqFt5sl0Z+UEviTecD3oIyWOE1eIptxy+Z6QB3ihahRzacsv+szxMJ0+u0ouIHz9qA9HEIbtq/zwQ5RbiIVqVmnZGsK3nm7JsnvpsILg9FGTDZ7RODo0ldbOGytsse4icCv2IOQLrrUcInzK7Gmi0lqR/EkierHnTZmpe8umsALvpKccF5hdOufPAPlExXRKLxoNAlm7+JbXnhKkJDOfObDI9UceQFfanl05V0OnToJlXqAq+49bCBOpTtzUlhhPEV0f3f9enHRiVdHSg5BJAXGcr12Kn8NzLJyRKeE/i/zew6zyMlI62T0ZdfuTTZkhD+z21lSyBXLIXsmO/YFw9XA8s0kt9K2y7tnyJIULsVG0P42KXal/sYuAmm1z+aVY78HrSZUCpFrR9WS2Btgiy8z+SGYriNh5dUiRPw6HhPoCuaLWPHu3udfh5Ebdaa4KU1IQ8GpaJVRhd8kR14o9gP+o2RVOVS46nEcj3Plgt2kYDHSISmluGlA9WDQuC91Wxi9egoW5OMsEb9bQUT1v+zpvkSgGeX2rIml2YwI28kTrRwza/AHBj3u8Mc23ziaBAmxfIVGUp6RWpX+epAWLgGH06Pwccv/g8swCjPhI82jMK79Db43zhkqoYJQQHsHG3T10kzuLGnqTlzxoVCXhw/Z/pbEQxuTqChbAUjlXryWM=
