@@ -71,6 +71,8 @@ Toda la infraestructura construida en AWS para ejecutar este proyecto se encuent
 
 ### Terraform
 
+La salida de ```terraform apply``` se encuentra en [IaC/Apply_output.md](IaC/Apply_output.md).
+
 El script de Terraform realiza las siguientes acciones:
 - Crea un nuevo repositorio en ECR para almacenar las imagenes de los contenedores del pipeline CI/CD.
 - Crea un usuario IAM con policy restringida a hacer push al repositorio anteriormente creado.
