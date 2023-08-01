@@ -81,10 +81,12 @@ resource "aws_iam_access_key" "access_ecr" {
 }
 
 output "access_id" {
+  description = "Access id del usuario para ECR"
   value = aws_iam_access_key.access_ecr.id
 }
 
 output "access_secret" {
+  description = "Access key del usuario en base64 para el ECR"
   value = aws_iam_access_key.access_ecr.encrypted_secret
 }
 
@@ -151,12 +153,12 @@ module "eks" {
 }
 
 output "cluster_endpoint" {
-  description = "Endpoint for EKS control plane"
+  description = "Endpoint al control plane del EKS"
   value       = module.eks.cluster_endpoint
 }
 
 output "cluster_name" {
-  description = "Kubernetes Cluster Name"
+  description = "Nombre del cluster en EKS"
   value       = module.eks.cluster_name
 }
 
