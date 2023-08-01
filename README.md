@@ -117,7 +117,7 @@ El script de Terraform realiza las siguientes acciones:
 ### Kubernetes
 
 La aplicación crea los siguientes objetos de kubernetes:
-- Ingress configurado para rutear el trafico al service
+- Ingress
 - Service
 - Deployment
   - Configurado probes readiness y liveness.
