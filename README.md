@@ -17,6 +17,7 @@ Este repositorio contiene el desarrollo de la prueba técnica de DevOps para Dev
 - AWS CLI v2.7.6
 - Kubeseal v0.20.5
 - Helm v3.12.0
+- Kubectl v1.27.4
 
 # Requisitos
 
@@ -57,8 +58,9 @@ Para obtener el AWS_ACCESS_SECRET
 ```bash
 terraform output -raw access_secret | base64 --decode | gpg --decrypt
 ```
-3. Instalar el chart que contiene la aplicación demo usando helm:
+3. Actualizar context kubectl e instalar el chart que contiene la aplicación demo usando helm:
 ```bash
+aws eks --region us-east-1 update-kubeconfig --name k8s-devsu-demo
 helm install devsu demo-chart --namespace prod
 ```
 ## Arquitectura
