@@ -286,6 +286,7 @@ resource "kubernetes_secret" "sealed-secrets-key" {
 }
 # Instalando Sealed Secrets usando helm
 resource "helm_release" "sealed-secrets" {
+  depends_on = [kubernetes_namespace.sealed-secrets-ns]
   chart      = "sealed-secrets"
   name       = "sealed-secrets"
   namespace  = "sealed-secrets"
@@ -294,6 +295,7 @@ resource "helm_release" "sealed-secrets" {
 
 /* Instalando Metrics Server para HPA */
 resource "helm_release" "metrics_server" {
+  depends_on = [module.eks]
   name       = "metrics-server"
   repository = "https://kubernetes-sigs.github.io/metrics-server/"
   chart      = "metrics-server"
