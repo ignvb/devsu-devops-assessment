@@ -166,6 +166,17 @@ El siguiente diagrama muestra las etapas del pipeline CD.
 - Se usó otro usuario IAM con permisos para conectarse al cluster e instalar el paquete Helm. Por motivos de tiempo esto se configuro usando Terraform y fue creada manualmente.
 - Para reinstalar el demo-chart, se uso action ```bitovi/github-actions-deploy-eks-helm@v1.2.4``` que se encuentra bien documentado y mantenido.
 
+## Modificaciones al código fuente
+
+Se realizaron los siguientes cambios a la versión original ```https://bitbucket.org/devsu/demo-devops-python/src/master/```:
+1. (Commit ```7a444c3```) El análisis del código con sonarqube detecto que el import ```/scr/api/urls.py``` no era especifico y lo considero algo grave
+```diff
+- from .views import *
++ from .views import UserViewSet
+```
+2. (Commit ```7eb345b```) Para producción se desactivo el modo DEBUG y se aprovecho de controlarlo por un parámetro environment.
+3. (Commit ```b19469b```) Se uso un wildcard ```*``` en la variable ALLOWED_HOSTS para evitar conflictos con las asignaciones dinamicas de ip en kubernetes.
+
 ## Limitaciones
 
 ### Sealed Secret
