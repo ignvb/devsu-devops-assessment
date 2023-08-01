@@ -2,7 +2,7 @@ name: devsu-assesment-ci
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ main ]
     paths:
       - 'demo-chart/**'
       - 'src/**'
